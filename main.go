@@ -8,7 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/alecthomas/kingpin.v2"
 	"gopkg.in/yaml.v2"
-
+	"io/ioutil"
 	"net/http"
 	"os"
 )
@@ -29,7 +29,7 @@ func init() {
 }
 
 func main() {
-	log.Info("Starting alarmclock server...")
+	log.Infof("Starting alarmclock server on port %d", 5050)
 
 	log.Debug("Parsing CLI")
 	kingpin.Version(domain.Version)
@@ -47,7 +47,7 @@ func loadConfig() {
 	if err != nil {
 		log.Panic(err)
 	}
-	if err = yaml.Unmarshal(raw, &config); err != nil {
+	if err = yaml.Unmarshal(raw, &rest.Config); err != nil {
 		log.Panic(err)
 	}
 }
@@ -55,7 +55,8 @@ func loadConfig() {
 func start() {
 	router := httprouter.New()
 	router.GET("/ping", rest.Ping)
-	router.GET("/v1/:host", rest.Handler)
+	router.GET("/v1/wake/:host", rest.Wake)
+	router.GET("/v1/sleep/:host", rest.Sleep)
 	router.GET("/", rest.Version)
 
 	{
