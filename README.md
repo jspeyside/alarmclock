@@ -36,10 +36,10 @@ Windows needs special configuration to allow remote management and shutdown. To 
 On the remote host, a PowerShell prompt, using the **Run as Administrator** option and paste in the following lines:
 
 ```powershell
-		winrm quickconfig
-		y
-		winrm set winrm/config/service/Auth '@{Basic="true"}'
-		winrm set winrm/config/service '@{AllowUnencrypted="true"}'
-		winrm set winrm/config/winrs '@{MaxMemoryPerShellMB="1024"}'
+winrm quickconfig
+y
+winrm set winrm/config/service/Auth '@{Basic="true"}'
+winrm set winrm/config/service '@{AllowUnencrypted="true"}'
+winrm set winrm/config/winrs '@{MaxMemoryPerShellMB="1024"}'
 ```
 Windows Firewall must be running to enable remote management. In addition the NIC used for shutdown, must be set as a private network (network discovery enabled).
