@@ -5,9 +5,8 @@ import (
 	"github.com/ghthor/gowol"
 	"github.com/jspeyside/alarmclock/domain"
 	"github.com/julienschmidt/httprouter"
-	"github.com/pkg/errors"
-	// wol "github.com/sabhiram/go-wol"
 	"github.com/masterzen/winrm"
+	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
@@ -15,6 +14,7 @@ import (
 )
 
 var (
+	// Config defines a configuration for waking/sleeping hosts
 	Config domain.Config
 )
 
@@ -30,7 +30,7 @@ func Wake(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
 	host := Config.Hosts[hostname]
 	mac := host.MacAddress
 	if mac == "" {
-		log.Errorf("No mac address found in config for %s", hostname)
+		writeError(w, errors.Errorf("No mac address found in config for %s", hostname))
 		return
 	}
 	log.Debugf("Waking %s[%s]", hostname, mac)
@@ -43,23 +43,23 @@ func Wake(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
 	}
 }
 
+// Sleep shuts down a configured PC
 func Sleep(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
 	hostname := params.ByName("host")
 	host := Config.Hosts[hostname]
-	mac := host.MacAddress
-	if mac == "" {
-		log.Errorf("No mac address found in config for %s", hostname)
+	if host.Username == "" || host.Password == "" {
+		writeError(w, errors.Errorf("Missing username/password for %s", hostname))
 		return
 	}
 	log.Debugf("Putting %s to sleep", hostname)
 	endpoint := winrm.NewEndpoint(hostname, 5985, false, false, nil, nil, nil, 0)
 	client, err := winrm.NewClient(endpoint, host.Username, host.Password)
 	if err != nil {
-		panic(err)
+		writeError(w, err)
 	}
 	code, err := client.Run("shutdown /s /t 0", w, w)
 	if err != nil {
-		writeError(w, errors.Wrap(err, "Error putting host to slep"))
+		writeError(w, errors.Wrap(err, "Error putting host to sleep"))
 		return
 	}
 	log.Debug("Sleep cmd exited with ", code)
@@ -68,7 +68,6 @@ func Sleep(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
 // Ping is a healthcheck endpoint and returns a simple pong
 func Ping(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
 	w.Write(toBytes("pong"))
-
 }
 
 // Version is a version endpoint for the api
@@ -89,5 +88,4 @@ func toBytes(s string) []byte {
 
 func wakeOnLAN(mac string) error {
 	return wol.MagicWake(mac, Config.Broadcast)
-	// return wol.SendMagicPacket(mac, Config.Broadcast+":9", "")
 }
