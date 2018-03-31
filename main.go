@@ -29,7 +29,7 @@ func init() {
 }
 
 func main() {
-	log.Infof("Starting alarmclock server on port %d", 5050)
+	log.Infof("Starting alarmclock v%s server on port %d", domain.Version, 5050)
 
 	log.Debug("Parsing CLI")
 	kingpin.Version(domain.Version)
