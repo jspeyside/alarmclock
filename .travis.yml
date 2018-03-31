@@ -1,7 +1,9 @@
-sudo: false
+sudo: required
 language: go
 go:
-- 1.10.x
+  - 1.10.x
+services:
+  - docker
 env:
   global:
   - secure: rl8Di1ityUSOiRVudO79P9P3i0Y4XYZbvSljyi9nF0Z4f0zpClLzWU/8NXMw9wh0Q5aZC5kSF7hGNIbwkOypeYqKllaEkoX/9eC84U2ONvKWhI/dfmhDAPKSfX2hZsNCbByCu4+YKNMeJz08ODsg3FJ1y820KkF+s3aPTucZnRpmbgpDaOYztGHCNleO7pTKa1xdLNs8wS2gXoYP/2Vs8HPaWRUAkHWkdBdxCnHWGxEmrZ40Rs73dvIjl0iZp+7rkd0yqNJbNQxBaq4WUolTFKaglNlLmpekTX0A/Z7ArQ/Zqd7uuahxW4yGSh3mcV6yLDO2kqtPCWO+o9LkL6zDoJLhe9TxDhuwZ7ndaL25Z34x25aTYnxNOJqkcuxcILezaCcS/RGkbawBLqF8y/Z7JwQ25eu1MweGfgZnT3OfPr1kf5BTuZdFFY3rGdo5VYwX6t54piITnN/40ixlx2h5b32b57fu+0B13bR3iTFSrELtnkwBbWLjsUuLLBLsBP3Y8rQBDXsY+tOB7olpqdn8v5rwTIsNX8h+RsrLY23/qNazQudYJI8PbdYxPQ5cA2PJFjFPpA7mdfyxL6dSeUxYvQP4vFqUepaW2q/Ay1hsX9s5Ajk5vpBfudOLoRIezO9SNgOcA5+oa5s5204rDxnOOzGAD8opTkZJX8oZrgs17aw=
