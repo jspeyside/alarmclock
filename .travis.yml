@@ -15,5 +15,6 @@ env:
 deploy:
   provider: script
   script: scripts/travis.sh
+  skip_cleanup: true
   on:
     banch: master
