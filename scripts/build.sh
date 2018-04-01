@@ -1,6 +1,10 @@
 #!/bin/bash
 set -xe
 
+echo "dir contents"
+ls
+echo "where am i?"
+pwd
 VERSION=${VERSION:-`cat VERSION.TXT`}
 
 docker_build() {
