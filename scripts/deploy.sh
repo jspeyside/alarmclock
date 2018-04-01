@@ -19,4 +19,5 @@ done
 cd ..
 rm -rf build/*
 
-docker push speyside/alarmclock:$VERSION speyside/alarmclock:latest
+docker push speyside/alarmclock:$VERSION
+docker push speyside/alarmclock:latest
