@@ -1,19 +1,19 @@
 #!/bin/bash
 set -xe
 
-VERSION=${VERSION:-`cat VERSION.TXT`}
+VERSION=${VERSION:-`cat VERSION`}
 
 docker_build() {
   # Build the binary for alpine linux
   docker run --rm -it \
     -v `pwd`:/go/src/github.com/jspeyside/alarmclock speyside/golang \
     'set -x && cd /go/src/github.com/jspeyside/alarmclock && \
-     export VERSION=`cat VERSION.txt` && go get ./... && \
+     export VERSION=`cat VERSION` && go get ./... && \
      go build -o alarmclock -ldflags "-X github.com/jspeyside/alarmclock/domain.Version=$$VERSION"'
 
   # Build and tag the image
-  docker build -t speyside/alarmclock:`cat VERSION.txt` .
-  docker tag speyside/alarmclock:`cat VERSION.txt` speyside/alarmclock:latest
+  docker build -t speyside/alarmclock:`cat VERSION` .
+  docker tag speyside/alarmclock:`cat VERSION` speyside/alarmclock:latest
 }
 
 binary_build() {
