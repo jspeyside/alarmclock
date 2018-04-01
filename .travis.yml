@@ -1,7 +1,9 @@
 sudo: required
 language: go
 go:
-- 1.10.x
+  - 1.10.x
+python:
+  - 2.7
 services:
 - docker
 env:
@@ -12,6 +14,6 @@ env:
   - secure: bEH4JGALUIkVCOhEdaMFAkc3EV8TVObTMZ7zOGIiJwkVsnBbrM22Zh/Sjh0fcBCZ/zvhfplo+zAKEcQh2SmX2FAOpPhIAXnfKIyHNNSjB3k1RZu+1OO0/HgBR8FZlz/ufmYwXSRK0R7T+xR6Fa/iOz8NxOnkHAmIsEWRUlpuJNHVlYMFUO9GW9+MUBu1Hpc2NKIdgeHD+ABnqFBS3re7e1mhAjPR4pihe59UezarVgMlMcMM27EDoMDxH73YVX4LGFgEfl07cy/xVu/ITihDPpeDaFS3BLTmvbr7VkUas0f7JLg1XKFdUCFiR1pcVML/vVFTsT8zrfzWytMls7pVcQQDwOyRfz2Lv0erIa7B0W+dIvBcV5tsGB9WBbhCSagFhoVYW+GsbNMkMBgl9NJBXTi1YI30OaG4XbewGSOgYFVYse6cv63NV1Bn3/tgKA3rcyydIl2XNYkXdgkpoP9ceQANpVnqcqQL0JrniPSIR/naDNoBUrMlO4lKHAwEw8BP0lEnl96PJXbhW18ONaH4Xf7AHMbgSm3SVZpdPbVU3UEBN/RRx3ekrli/ieZuS3q8sDm+gvsd9PmtpcC4ZdotgCUaImFwxYofyBpojtL9wcoxvff4Ix/T8iGPWA3JUVzX48PNUepcolmnTYD//Lnypwl+pqkacgBXrStvZ31TVCI=
 deploy:
   provider: script
-  script: scripts/deploy.sh
+  script: scripts/travis.sh
   on:
     banch: master
