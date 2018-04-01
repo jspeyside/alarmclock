@@ -2,7 +2,7 @@
 set -e
 
 b2 authorize-account $B2_ID $B2_KEY
-VERSION=${VERSION:-`cat VERSION.TXT`}
+VERSION=${VERSION:-`cat VERSION`}
 
 if (! docker images | grep -q speyside/alarmclock | grep -q $VERSION); then
   scripts/build.sh
