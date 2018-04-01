@@ -5,6 +5,7 @@ echo "dir contents"
 ls
 echo "where am i?"
 pwd
+cat scripts/travis.sh
 VERSION=${VERSION:-`cat VERSION.TXT`}
 
 docker_build() {
