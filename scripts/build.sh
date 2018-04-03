@@ -7,9 +7,9 @@ docker_build() {
   # Build the binary for alpine linux
   docker run --rm -it \
     -v `pwd`:/go/src/github.com/jspeyside/alarmclock speyside/golang \
-    'set -x && cd /go/src/github.com/jspeyside/alarmclock && \
+    'cd /go/src/github.com/jspeyside/alarmclock && \
      export VERSION=`cat VERSION` && go get ./... && \
-     go build -o alarmclock -ldflags "-X github.com/jspeyside/alarmclock/domain.Version=$$VERSION"'
+     go build -o alarmclock -ldflags "-X github.com/jspeyside/alarmclock/domain.Version=``${VERSION}"'
 
   # Build and tag the image
   docker build -t speyside/alarmclock:`cat VERSION` .
