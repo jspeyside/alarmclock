@@ -46,7 +46,7 @@ host2_password=myotherpassword
 ### Via Docker
 AlarmClock can be run via docker using the following command:
 ```
-docker run -d -v <path_to_config.yml>:/config.yml --network="host" jspeyside/alarmclock:latest
+docker run -d -v <path_to_config.yml>:/config.yml --network="host" speyside/alarmclock:latest
 ```
 It is required to run AlarmClock on the host network due to the requirement to send magic packets to mac addresses on the network to wake them.
 
