@@ -2,7 +2,8 @@ package rest
 
 import (
 	"fmt"
-	domain "github.com/jspeyside/alarmclock/domain"
+	"github.com/jspeyside/alarmclock/domain"
+	"github.com/jspeyside/alarmclock/interfaces"
 	"github.com/julienschmidt/httprouter"
 	check "gopkg.in/check.v1"
 	"net/http/httptest"
@@ -115,6 +116,72 @@ func (s *RestSuite) TestSleepNoCredentials(c *check.C) {
 	resp := recorder.Result()
 	c.Assert(resp.StatusCode, check.Equals, 500)
 	c.Assert(recorder.Body.String(), check.Equals, "Missing username/password for emptyHost")
+}
+
+func (s *RestSuite) TestSleepVault(c *check.C) {
+	hostname := "host1"
+	domain.Vault = interfaces.NewMockVaultClient([]string{})
+	data := make(map[string]interface{})
+	userKey := fmt.Sprintf("%s_username", hostname)
+	passKey := fmt.Sprintf("%s_password", hostname)
+	data[userKey] = "username"
+	data[passKey] = "password"
+	domain.Vault.Write(domain.VaultPath, data)
+	request := httptest.NewRequest("GET", "/v1/sleep/", nil)
+	recorder := httptest.NewRecorder()
+	param := httprouter.Param{
+		Key:   "host",
+		Value: hostname,
+	}
+	Sleep(recorder, request, []httprouter.Param{param})
+	resp := recorder.Result()
+	c.Assert(resp.StatusCode, check.Equals, 500)
+	c.Assert(recorder.Body.String(), check.Matches, "Error putting host to sleep.*")
+}
+
+func (s *RestSuite) TestSleepVaultNoSecret(c *check.C) {
+	domain.Vault = interfaces.NewMockVaultClient([]string{})
+	request := httptest.NewRequest("GET", "/v1/sleep/", nil)
+	recorder := httptest.NewRecorder()
+	param := httprouter.Param{
+		Key:   "host",
+		Value: "host1",
+	}
+	Sleep(recorder, request, []httprouter.Param{param})
+	resp := recorder.Result()
+	c.Assert(resp.StatusCode, check.Equals, 500)
+	c.Assert(recorder.Body.String(), check.Matches, "Error putting host to sleep.*")
+}
+
+func (s *RestSuite) TestSleepVaultNoData(c *check.C) {
+	domain.Vault = interfaces.NewMockVaultClient([]string{})
+	data := make(map[string]interface{})
+	domain.Vault.Write(domain.VaultPath, data)
+	request := httptest.NewRequest("GET", "/v1/sleep/", nil)
+	recorder := httptest.NewRecorder()
+	param := httprouter.Param{
+		Key:   "host",
+		Value: "host1",
+	}
+	Sleep(recorder, request, []httprouter.Param{param})
+	resp := recorder.Result()
+	c.Assert(resp.StatusCode, check.Equals, 500)
+	c.Assert(recorder.Body.String(), check.Matches, "Error putting host to sleep.*")
+}
+
+func (s *RestSuite) TestSleepVaultClientErr(c *check.C) {
+	clientErrs := []string{"bad_client"}
+	domain.Vault = interfaces.NewMockVaultClient(clientErrs)
+	request := httptest.NewRequest("GET", "/v1/sleep/", nil)
+	recorder := httptest.NewRecorder()
+	param := httprouter.Param{
+		Key:   "host",
+		Value: "host1",
+	}
+	Sleep(recorder, request, []httprouter.Param{param})
+	resp := recorder.Result()
+	c.Assert(resp.StatusCode, check.Equals, 500)
+	c.Assert(recorder.Body.String(), check.Matches, "Error putting host to sleep.*")
 }
 
 func (s *RestSuite) TestPing(c *check.C) {

@@ -47,6 +47,14 @@ func Wake(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
 func Sleep(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
 	hostname := params.ByName("host")
 	host := Config.Hosts[hostname]
+	// Attempt to load username/password from vault
+	user, pass, err := loadVaultCredentials(hostname)
+	if err == nil {
+		host.Username = user
+		host.Password = pass
+	} else {
+		log.Error(err)
+	}
 	if host.Username == "" || host.Password == "" {
 		writeError(w, errors.Errorf("Missing username/password for %s", hostname))
 		return
@@ -88,4 +96,26 @@ func toBytes(s string) []byte {
 
 func wakeOnLAN(mac string) error {
 	return wol.MagicWake(mac, Config.Broadcast)
+}
+
+func loadVaultCredentials(hostname string) (username string, password string, err error) {
+	if domain.Vault == nil {
+		return "", "", errors.New("No Vault Client")
+	}
+	usernameKey := fmt.Sprintf("%s_username", hostname)
+	passwordKey := fmt.Sprintf("%s_password", hostname)
+	secret, err := domain.Vault.Read(domain.VaultPath)
+	if err != nil {
+		return "", "", errors.New("Error loading vault client")
+	}
+	if secret == nil {
+		return "", "", fmt.Errorf("No secret at %s", domain.VaultPath)
+	}
+	data := secret.Data
+	if data == nil || data[usernameKey] == nil || data[passwordKey] == nil {
+		return "", "", errors.New("No data loaded for vault secret")
+	}
+	username = fmt.Sprintf("%s", data[usernameKey])
+	password = fmt.Sprintf("%s", data[passwordKey])
+	return username, password, nil
 }

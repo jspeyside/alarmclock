@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"github.com/hashicorp/vault/api"
 	"github.com/jspeyside/alarmclock/domain"
+	"github.com/jspeyside/alarmclock/interfaces"
 	"github.com/jspeyside/alarmclock/rest"
 	"github.com/julienschmidt/httprouter"
 	log "github.com/sirupsen/logrus"
@@ -38,6 +40,9 @@ func main() {
 	// Load Config
 	loadConfig()
 
+	// Initialize Vault Client
+	initializeVault()
+
 	// Start the server
 	start()
 }
@@ -49,6 +54,23 @@ func loadConfig() {
 	}
 	if err = yaml.Unmarshal(raw, &rest.Config); err != nil {
 		log.Panic(err)
+	}
+}
+
+func initializeVault() {
+	if os.Getenv("VAULT_ADDR") == "" {
+		log.Warn("VAULT_ADDR env var not defined, falling back to unsecure config")
+		return
+	}
+	if os.Getenv("VAULT_TOKEN") == "" {
+		log.Warn("VAULT_TOKEN env var not defined, falling back to unsecure config")
+		return
+	}
+	config := api.DefaultConfig()
+	var err error
+	domain.Vault, err = interfaces.NewVaultClient(config)
+	if err != nil {
+		log.Error("Error initializing Vault Client ", err)
 	}
 }
 
